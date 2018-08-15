@@ -1,0 +1,65 @@
+def env = "testing"
+
+pipeline {
+    agent {label 'WinAgent2016'}
+    stages {
+        stage('build') {
+            steps {
+                echo 'stage build, env = ' + env
+                //bat 'python --version'
+                bat 'java -version'
+                bat 'dir'
+                //bat 'git status'
+                script{
+                    try {
+                        println 'env = ' + env
+                        println 'before reading file'
+                        println "build number = ${BUILD_NUMBER}"
+                        //def file2 = readFile 'c:/Temp/test.txt'
+                        //println 'after read file before use it'
+                        //println file2
+                    } catch (Exception e) {
+                        println 'inside catch block!!!'
+                        println "I caught e: ${e.message}"
+                    } finally {
+                        println 'inside finally block'
+                    }
+                }
+            }
+            post {
+                success {
+                    echo "Only when we haven't failed running the first stage"
+                }
+                failure {
+                    echo "Only when we fail running the first stage."
+                }
+            }
+        }
+        stage('test') {
+            agent {label 'master'}
+            steps {
+                echo 'stage test'
+                sh 'python --version'
+                sh 'ls'
+                //bat "exit 1"   used to check failure
+            }
+        }
+        stage('deploy') {
+            steps {
+                //sh 'sudo docker run -d -p 80:80 ittaihurvitz/simple-container-ittai:1.0'
+                echo 'stage deploy'
+            }
+        }
+    }
+    post { 
+        always { 
+            echo 'Post at the end of all stages'
+        }
+        success {
+            echo "Only when success"
+        }
+        failure {
+            echo "Only when fail"
+        }
+    }
+}
