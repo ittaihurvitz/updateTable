@@ -1,72 +1,59 @@
-def env = "testing"
-
+// Declare function setDescription
 @NonCPS 
-def setDescription() { 
+def setDescription(newDescription) { 
     try {
-        def item = Jenkins.instance.getItemByFullName("Test WinAgent")
+		def item = Jenkins.instance.getItemByFullName("Test WinAgent")
         if (item) {
             println "Found the job"
-            item.setDescription("This description was changed by script")
+            item.setDescription(newDescription)
             item.save()
         } else {
             pritln "Didn't find object woth this name"
         }
-        
-        //item.setDescription("This description was changed by script") 
-        //item.save()
     } catch  (Exception e) {
-        println 'inside catch block!!!'
-        println "I caught e: ${e.message}"
+        println "Exception: ${e.message}"
     }
 }
 
-
+// Run Pipeline
 pipeline {
     agent {label 'WinAgent2016'}
     stages {
         stage('build') {
             steps {
-                echo 'stage build, env = ' + env
-                //bat 'python --version'
-                bat 'java -version'
-                bat 'dir'
-                //bat 'git status'
-                script{
-                    setDescription()
-                }
+                echo 'stage build runs on WinAgent2016'
             }
             post {
                 success {
                     echo "Only when we haven't failed running the first stage"
                 }
                 failure {
-                    echo "Only when we fail running the first stage."
+                    echo "Only when we fail running the build stage."
                 }
             }
         }
         stage('test') {
             agent {label 'master'}
             steps {
-                echo 'stage test'
+                echo 'stage test runs on master'
                 sh 'python --version'
                 sh 'ls'
-                //bat "exit 1"   used to check failure
-                script {
-                    try {
-                        setDescription()
-                    } catch (Exception e) {
-                        println 'inside catch block!!!'
-                        println "I caught e: ${e.message}"
-                    } finally {
-                        //println 'inside finally block'
-                    }                    
+                script{
+					try {
+						htmlTable = readFile 'bubbleStatus.html'
+						println htmlTable
+						if (htmlTable) {
+							setDescription(htmlTable)
+						}
+					} catch (Exception e)  {
+						println "Exception: ${e.message}"
+					}
                 }
             }
         }
         stage('deploy') {
             steps {
-                //sh 'sudo docker run -d -p 80:80 ittaihurvitz/simple-container-ittai:1.0'
-                echo 'stage deploy'
+                echo 'stage deploy runs on WinAgent2016'
             }
         }
     }
