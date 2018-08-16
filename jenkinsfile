@@ -20,8 +20,23 @@ pipeline {
     agent {label 'WinAgent2016'}
     stages {
         stage('build') {
-            steps {
-                echo 'stage build runs on WinAgent2016'
+            agent {label 'master'}
+			steps {
+                echo 'stage build runs temporary on master and not on WinAgent2016'
+                script {
+                    echo "running artifactory actions:"
+                    def downloadSpec = """{
+							"files": [
+								{
+									"pattern": "libs-release-local/bubbles/", 
+									"target": "./"
+								}
+							]
+						}"""
+                    println "downloadSpec = " + downloadSpec
+    				def server = Artifactory.newServer url: 'https://ittai.jfrog.io/ittai/', username: 'admin', password: '4LmWr0KWRT'
+    				server.download(downloadSpec)    				
+                }				
             }
             post {
                 success {
