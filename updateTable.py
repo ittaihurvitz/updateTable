@@ -54,7 +54,7 @@ def updateBubble(bubbleName,user,htmlPath):
         print parent
                 
     else: # Didn't find a bubble with this name so add a new row
-        print "will add" + bubbleName
+        print "will add " + bubbleName
         table = soup.findAll('table')
         data1 = soup.new_tag('td', id='name')
         data1.string = bubbleName

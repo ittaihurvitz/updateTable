@@ -2,11 +2,16 @@ This job is running on the Windows agent but also have a node running on the Lin
 
 Inital steps - 
 1. Create the html file on the server.
-2. In Jenkins - approve the following methods - 
+2. Create the py file on the server.
+3. In Jenkins - approve the following methods - 
 	method jenkins.model.Jenkins getItemByFullName java.lang.String
 	staticMethod jenkins.model.Jenkins getInstance
 	method hudson.model.AbstractItem setDescription java.lang.String
 	method hudson.model.Saveable save
+4. In order to remove the 'sudo' from the jenkinsfile probably need to set correct permissions on the html file.
+
+
+
 
 Not important remark (keep it just as a reminder) - 
 Eventually didn't use the following because created the files manually on the Linux server (while this powershell method worked for me previousely on Windows) -

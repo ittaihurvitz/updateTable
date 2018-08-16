@@ -38,6 +38,7 @@ pipeline {
                 echo 'stage test runs on master'
                 sh 'python --version'
                 sh 'ls'
+                sh 'sudo python updateTable.py "Test4" "Ittai" "bubbleStatus.html"'
                 script{
 					try {
 						htmlTable = readFile 'bubbleStatus.html'
