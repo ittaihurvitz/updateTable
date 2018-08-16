@@ -1,5 +1,26 @@
 def env = "testing"
 
+@NonCPS 
+def setDescription() { 
+    try {
+        def item = Jenkins.instance.getItemByFullName("Test WinAgent")
+        if (item) {
+            println "Found the job"
+            item.setDescription("This description was changed by script")
+            item.save()
+        } else {
+            pritln "Didn't find object woth this name"
+        }
+        
+        //item.setDescription("This description was changed by script") 
+        //item.save()
+    } catch  (Exception e) {
+        println 'inside catch block!!!'
+        println "I caught e: ${e.message}"
+    }
+}
+
+
 pipeline {
     agent {label 'WinAgent2016'}
     stages {
@@ -11,19 +32,7 @@ pipeline {
                 bat 'dir'
                 //bat 'git status'
                 script{
-                    try {
-                        println 'env = ' + env
-                        println 'before reading file'
-                        println "build number = ${BUILD_NUMBER}"
-                        //def file2 = readFile 'c:/Temp/test.txt'
-                        //println 'after read file before use it'
-                        //println file2
-                    } catch (Exception e) {
-                        println 'inside catch block!!!'
-                        println "I caught e: ${e.message}"
-                    } finally {
-                        println 'inside finally block'
-                    }
+                    setDescription()
                 }
             }
             post {
@@ -42,6 +51,16 @@ pipeline {
                 sh 'python --version'
                 sh 'ls'
                 //bat "exit 1"   used to check failure
+                script {
+                    try {
+                        setDescription()
+                    } catch (Exception e) {
+                        println 'inside catch block!!!'
+                        println "I caught e: ${e.message}"
+                    } finally {
+                        //println 'inside finally block'
+                    }                    
+                }
             }
         }
         stage('deploy') {
