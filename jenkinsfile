@@ -38,7 +38,9 @@ pipeline {
                 echo 'stage test runs on master'
                 sh 'python --version'
                 sh 'ls'
-                sh 'sudo python updateTable.py "Test4" "Ittai" "bubbleStatus.html"'
+                echo "Bubble name is ${params.bubbleName}"
+                echo "Buble usage is ${params.bubbleUsage}"
+                sh "sudo python updateTable.py \"${params.bubbleName}\" \"${params.bubbleUsage}\" \"bubbleStatus.html\""
                 script{
 					try {
 						htmlTable = readFile 'bubbleStatus.html'
