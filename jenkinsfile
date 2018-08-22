@@ -1,3 +1,25 @@
+import hudson.model.AbstractProject
+import hudson.tasks.Mailer
+import hudson.model.User
+
+
+// Declare function getUserEmail
+@NonCPS 
+def getUserEmail() { 
+    try {
+		def item = hudson.model.Hudson.instance.getItem(env.JOB_NAME) 
+		def build = item.getLastBuild()
+		def cause = build.getCause(hudson.model.Cause.UserIdCause.class)
+		def id = cause.getUserId()
+		User u = User.get(id)
+		def umail = u.getProperty(Mailer.UserProperty.class)
+		print "User email is: " + umail.getAddress()
+    } catch  (Exception e) {
+        println "Exception: ${e.message}"
+    }
+}
+
+
 // Declare function setDescription
 @NonCPS 
 def setDescription(newDescription) { 
@@ -63,6 +85,7 @@ pipeline {
 						if (htmlTable) {
 							setDescription(htmlTable)
 						}
+						getUserEmail()
 					} catch (Exception e)  {
 						println "Exception: ${e.message}"
 					}
